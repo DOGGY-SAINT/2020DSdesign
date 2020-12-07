@@ -2,25 +2,42 @@
 //MyVector已加入
 //已完成
 
-#include<iostream>
-#include"MyVector.h"
+#include <iostream>
+#include "MyVector.h"
 
 using namespace std;
+
+bool cinFail()
+{
+	bool fail = cin.fail();
+	if (fail)
+	{
+		cout << ("输入失败") << endl;
+		cin.clear();
+	}
+	return fail;
+}
 
 class Bank
 {
 private:
-	MyVector<int> WA, WB,output;
+	MyVector<int> WA, WB, output;
+
 public:
 	Bank()
-	{}
+	{
+	}
 	void input()
 	{
 		int n, tmp;
 		cin >> n;
+		if (cinFail())
+			exit(0);
 		for (int i = 0; i < n; i++)
 		{
 			cin >> tmp;
+			if (cinFail())
+				exit(0);
 			if (tmp % 2)
 				WA.push_back(tmp);
 			else
@@ -30,14 +47,14 @@ public:
 	void setOutput()
 	{
 		int i = 0;
-		for (auto itA = WA.begin(), itB = WB.begin();itA!=WA.end()||itB!=WB.end();i++)
+		for (auto itA = WA.begin(), itB = WB.begin(); itA != WA.end() || itB != WB.end(); i++)
 		{
 			if (itA != WA.end())
 			{
 				output.push_back(*itA);
 				itA++;
 			}
-			if (itB != WB.end()&&i % 2)
+			if (itB != WB.end() && i % 2)
 			{
 				output.push_back(*itB);
 				itB++;
@@ -46,12 +63,12 @@ public:
 	}
 	void showOutput()
 	{
-		for (auto it = output.begin(); ;)
+		for (auto it = output.begin();;)
 		{
 			cout << *it;
 			if (++it != output.end())
 				cout << ' ';
-			else 
+			else
 				break;
 		}
 	}
