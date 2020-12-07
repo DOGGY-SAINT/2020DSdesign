@@ -88,6 +88,7 @@ void show(MyVector<Data> vec, char end = '\n')
 			cout << data._data;
 		else if (data._type == OPERATOR)
 			cout << char(data._data);
+		cout<<' ';
 	}
 	cout << end;
 }
@@ -242,8 +243,6 @@ public:
 			{
 				if (haveLeftNum == false)
 				{
-					/*isAddingNum = true;
-					int_tmp += ch;*/
 					_input.insert(i, "(0");
 					i--;
 					int cnt = 0, j = i + 4;
@@ -346,11 +345,13 @@ public:
 	//展示中缀
 	void showInfix()
 	{
+		cout<<"Infix:";
 		show(_infix);
 	}
 	//展示后缀
 	void showSuffix()
 	{
+		cout<<"Sufix:";
 		show(_suffix);
 	}
 	//根据后缀表达式计算结果
@@ -359,9 +360,7 @@ public:
 		MyVector<double> tmp;
 		for (Data data : _suffix)
 		{
-			if (data._type == NUM)
-				tmp.push_back(data._data);
-			else
+			if (data._type == OPERATOR)
 			{
 				int t1, t2;
 				if (tmp.empty())
@@ -370,27 +369,25 @@ public:
 					throw string("表达式错误");
 					return;
 				}
-				t1 = tmp.back();
-				tmp.pop_back();
+				t1 = tmp.pop_back();
 				if (tmp.empty())
 				{
 					_wrong = true;
 					throw string("表达式错误");
 					return;
 				}
-				t2 = tmp.back();
-				tmp.pop_back();
-				double res = cal(t2, t1, data._data);
-				tmp.push_back(res);
+				t2 = tmp.pop_back();
+				data._data = cal(t2, t1, data._data);
 			}
+			tmp.push_back(data._data);
 		}
-		_result = tmp.back();
 		if (tmp.empty())
 		{
 			_wrong = true;
 			throw string("表达式错误");
 			return;
 		}
+		_result = tmp.back();
 		tmp.pop_back();
 	}
 	//结果
@@ -404,12 +401,12 @@ public:
 		if (!_wrong)
 		{
 			calInfix();
-			/*showInfix();*/
+			// showInfix();
 		}
 		if (!_wrong)
 		{
 			calSuffix();
-			/*showSuffix();*/
+			// showSuffix();
 		}
 		if (!_wrong)
 			calResult();
@@ -430,7 +427,7 @@ public:
 				if (!_wrong)
 					calAll();
 				if (!_wrong)
-					cout << "结果是：" << fixed << _result << endl;
+					cout << "Result:" << fixed << _result << endl;
 			}
 			catch (string str)
 			{
@@ -438,7 +435,6 @@ public:
 			}
 		}
 	}
-
 };
 
 //main
