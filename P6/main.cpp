@@ -104,7 +104,7 @@ public:
 		}
 		_children.clear();
 	}
-	MemberNode* find(string name, int depth = 0)
+	MemberNode* find(string name)
 	{
 		if (name == _name)
 			return this;
@@ -112,7 +112,7 @@ public:
 		{
 			for (auto mb : _children)
 			{
-				auto res=mb->find(name, depth + 1);
+				auto res=mb->find(name);
 				if (res)
 					return res;
 			}
@@ -257,7 +257,7 @@ public:
 			log("输入错误");
 			return;
 		}
-		log("请依次输入"+ target->name() +"的儿女的姓名", '\0');
+		log("请依次输入"+ target->name() +"的儿女的姓名:", '\0');
 		for (int i = 0; i < n; i++)
 		{
 			string cname;
