@@ -566,13 +566,8 @@ public:
 		log();
 		int n;
 		input(n, "请输入指令:");
-		if (cin.fail())
-		{
-			log("输入失败");
-			cin.clear();
-			cin.ignore(10000, '/n');
-		}
-		else if (n == 1)
+		cinFail();
+		if (n == 1)
 		{
 			reRand();
 		}
