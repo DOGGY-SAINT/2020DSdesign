@@ -1,14 +1,17 @@
 //项目十  8种排序算法的比较案例
 
-#include<Windows.h>
 #include<cstdlib>
 #include<ctime>
 #include<string>
 #include<iostream>
 #include<iomanip>
 #include"MyVector.h"
+#include<vector>
 
 using namespace std;
+
+vector<int> t;
+
 
 typedef void (*Function)(MyVector<int>&);
 
@@ -34,7 +37,7 @@ bool cinFail()
 	{
 		log("输入失败");
 		cin.clear();
-		cin.ignore(LLONG_MAX, '\n');
+		cin.ignore(1000000, '\n');
 		return true;
 	}
 	return false;
@@ -386,7 +389,7 @@ public:
 		input(n, "请输入要产生的随机数个数:");
 		if (cinFail())
 			return;
-		else if (n >= 10 && n <= 100000)
+		else if (n >= 100 && n <= 100000)
 		{
 			initialize(n);
 			log("生成随机数组成功");
@@ -405,12 +408,12 @@ public:
 		}
 		MyVector<int> copy = _vec;
 		g_cnt = 0;
-		LARGE_INTEGER begin, end, gap;
-		QueryPerformanceFrequency(&gap);
-		QueryPerformanceCounter(&begin);
+		double tb,te,gap;
+		tb=clock(); 
+		// clock_gettime();
 		p(copy);
-		QueryPerformanceCounter(&end);
-		double t = double(end.QuadPart - begin.QuadPart) / gap.QuadPart;
+		te=clock();
+		double t = (te-tb)/CLOCKS_PER_SEC;
 		if (check(copy))
 		{
 			log(g_name + " 耗时:" + to_string(t) + "s " + "交换次数:" + to_string(g_cnt));
@@ -508,6 +511,7 @@ const Function Guide::fun[8] =
 
 int main()
 {
+	++t.begin();
 	Guide guider;
 	while (guider.loop())
 	{

@@ -49,7 +49,7 @@ public:
 		_pos++;
 		return *this;
 	}
-	iterator& operator++(int)
+	iterator operator++(int)
 	{
 		iterator tmp = *this;
 		_ptr++;
@@ -62,7 +62,7 @@ public:
 		_pos--;
 		return *this;
 	}
-	iterator& operator--(int)
+	iterator operator--(int)
 	{
 		iterator tmp = *this;
 		_ptr--;
