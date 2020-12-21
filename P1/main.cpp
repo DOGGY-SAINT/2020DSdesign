@@ -1,4 +1,5 @@
 //题目一  考试报名系统
+//UTF-8
 //已完成
 #include <iostream>
 #include <iomanip>
