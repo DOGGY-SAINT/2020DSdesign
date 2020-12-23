@@ -11,12 +11,14 @@
 
 using namespace std;
 
+class Exception;
 class Course;
-class ClassTime;
+class Term;
+class WorkData;
 class System;
 
 template <typename val_type>
-void log(const val_type &data, char end = '\n',ostream& os=cout)
+void log(const val_type &data, char end = '\n', ostream &os = cout)
 {
     os << data << end;
 }
@@ -28,10 +30,57 @@ void Swap(type &a, type &b)
     a = b, b = t;
 }
 
+class Exception
+{
+public:
+    //Fail需要注意位置，Bad直接交给全局退出程序就好了
+    enum EType
+    {
+        Fail,
+        Bad
+    };
+
+private:
+    EType _type;
+    string _data;
+
+public:
+    Exception(const string &str, EType type = Fail)
+        : _type(type), _data(str)
+    {
+    }
+
+    bool fail() const
+    {
+        return _type == Fail;
+    }
+
+    bool bad() const
+    {
+        return _type == Bad;
+    }
+
+    string data() const
+    {
+        return _data;
+    }
+
+    friend ostream &operator<<(ostream &os, const Exception exc)
+    {
+        os << exc._data;
+        return os;
+    }
+};
+
 bool cinFail()
 {
     if (!cin.fail())
         return false;
+    cin.clear();
+    string str;
+    cin >> str;
+    if (str == "exit")
+        throw Exception("输入了exit,程序终止", Exception::Bad);
     cin.clear();
     cin.ignore(10000, '\n');
     return true;
@@ -42,7 +91,7 @@ bool isChar(char ch) //是字符
     return ch >= 0 && ch <= 127;
 }
 
-void output(const string &str, int width, ostream& os=cout) //Linux中考虑中文的左对齐格式化输出,无endl
+void output(const string &str, int width, ostream &os = cout) //Linux中考虑中文的左对齐格式化输出,无endl
 {
     int cnt = 0;
     for (int i = 0; i < str.size(); i++)
@@ -112,48 +161,6 @@ bool isInt(const string &str)
     }
     return true;
 }
-
-class Exception
-{
-public:
-    //Fail需要注意位置，Bad直接交给全局退出程序就好了
-    enum EType
-    {
-        Fail,
-        Bad
-    };
-
-private:
-    EType _type;
-    string _data;
-
-public:
-    Exception(const string &str, EType type = Fail)
-        : _type(type), _data(str)
-    {
-    }
-
-    bool fail() const
-    {
-        return _type == Fail;
-    }
-
-    bool bad() const
-    {
-        return _type == Bad;
-    }
-
-    string data() const
-    {
-        return _data;
-    }
-
-    friend ostream &operator<<(ostream &os, const Exception exc)
-    {
-        os << exc._data;
-        return os;
-    }
-};
 
 class Course
 {
@@ -226,12 +233,14 @@ public:
         if (!isInt(tmp[3]))
             throw Exception("读取文件失败,课程" + crs._id + "开课学期不为非负整数", Exception::Bad);
         crs._term = stoi(tmp[3]);
-        if (crs._hours > 8)
-            throw Exception("课程" + crs._id + "开课学期大于8或为0", Exception::Bad);
+        if (crs._term > 8)
+            throw Exception("课程" + crs._id + "开课学期大于8", Exception::Bad);
 
         //先修课程
         for (int i = 4; i < tmp.size(); i++)
         {
+            if(tmp[i]==crs._id)
+                throw Exception("课程" + crs._id + "先修课程" + tmp[i] + "为自身", Exception::Fail);
             if (crs._preCrs.find(tmp[i]) == crs._preCrs.end())
                 crs._preCrs.push_back(tmp[i]);
             else
@@ -310,7 +319,7 @@ public:
         return -1;
     }
 
-    int attributeCourse_3(Course crs, int &hours, int& prefer)
+    int attributeCourse_3(Course crs, int &hours, int &prefer)
     {
         for (int day = prefer; day < 5; day++, day %= 5)
         {
@@ -350,7 +359,7 @@ public:
         return -1;
     }
 
-    int attributeCourse_2(Course crs, int &hours, int& prefer)
+    int attributeCourse_2(Course crs, int &hours, int &prefer)
     {
         for (int day = prefer; day < 5; day++, day %= 5)
         {
@@ -358,7 +367,7 @@ public:
             if (avi != -1) //可以安排
             {
                 prefer = (prefer + 3) % 5;
-                _schedule[avi][day] = _schedule[avi+1][day] = crs;
+                _schedule[avi][day] = _schedule[avi + 1][day] = crs;
                 hours -= 2;
                 return day;
             }
@@ -398,7 +407,7 @@ public:
             int lst = 0;
             while (crs._hours != 0)
             {
-                if (crs._hours>= 5 || crs._hours == 3)
+                if (crs._hours >= 5 || crs._hours == 3)
                     if (attributeCourse_3(crs, crs._hours, lst) != -1)
                         continue;
                 if (crs._hours > 1)
@@ -411,25 +420,24 @@ public:
         }
     }
 
-    void showSchedule(ostream& os=cout)
+    void showSchedule(ostream &os = cout)
     {
-        os<<setw(10)<<' ';
-        for(int i=0;i<5;i++)
+        os << setw(10) << ' ';
+        for (int i = 0; i < 5; i++)
         {
-            output("周"+to_string(i+1),6,os);
+            output("周" + to_string(i + 1), 6, os);
         }
-        os<<endl;
-        for(int i=0;i<10;i++)
+        os << endl;
+        for (int i = 0; i < 10; i++)
         {
-            output("第"+to_string(i+1)+"节课",10,os);
-            for(int day=0;day<5;day++)
-                output(_schedule[i][day]._id,6,os);
-            os<<endl;
-            if(i==1||i==4||i==6||i==9)
-                os<<endl;
+            output("第" + to_string(i + 1) + "节课", 10, os);
+            for (int day = 0; day < 5; day++)
+                output(_schedule[i][day]._id, 6, os);
+            os << endl;
+            if (i == 1 || i == 4 || i == 6 || i == 9)
+                os << endl;
         }
     }
-
 };
 
 class WorkData //状态量
@@ -670,19 +678,18 @@ public:
 
     void setSchedule()
     {
-        for(int i=0;i<8;i++)
+        for (int i = 0; i < 8; i++)
         {
             _term[i].attribute();
         }
     }
 
-
     void showSchedule()
     {
-        for(int i=0;i<8;i++)
+        for (int i = 0; i < 8; i++)
         {
-            cout<<endl;
-            log("               第"+to_string(i+1)+"学期");
+            cout << endl;
+            log("               第" + to_string(i + 1) + "学期");
             _term[i].showSchedule();
         }
     }
@@ -690,17 +697,16 @@ public:
     void writeSchedule(string fileName)
     {
         ofstream of;
-        of.open(fileName,ios::out|ios::trunc);
-        if(!of.is_open())
-            throw Exception(fileName+"不存在，输出失败",Exception::Bad);
-        for(int i=0;i<8;i++)
+        of.open(fileName, ios::out | ios::trunc);
+        if (!of.is_open())
+            throw Exception(fileName + "不存在，输出失败", Exception::Bad);
+        for (int i = 0; i < 8; i++)
         {
-            of<<endl;
-            log("               第"+to_string(i+1)+"学期",'\n',of);
+            of << endl;
+            log("               第" + to_string(i + 1) + "学期", '\n', of);
             _term[i].showSchedule(of);
         }
     }
-
 
     void showCourses(); //输出所有课程
 };
@@ -875,12 +881,10 @@ void System::readFile(string fileName) //从文件读取所有课程
     getline(in, t);
     while (!in.eof())
     {
+        Course tmp;
         try
         {
-            Course tmp;
             in >> tmp;
-            if (!tmp.empty())
-                _courses.push_back(tmp);
         }
         catch (Exception exc)
         {
@@ -888,6 +892,8 @@ void System::readFile(string fileName) //从文件读取所有课程
             if (exc.bad())
                 exit(0);
         }
+        if (!tmp.empty())
+            _courses.push_back(tmp);
     }
 }
 
