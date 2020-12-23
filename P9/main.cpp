@@ -3,6 +3,7 @@
 //add .vscode in file
 //remember to put in.txt together with it
 //Linux
+//不能分文件也太痛苦了
 #include <string>
 #include <fstream>
 #include <iostream>
