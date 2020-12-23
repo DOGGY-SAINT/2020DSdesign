@@ -20,14 +20,14 @@ c18			计算机网络		5		0			c03
 c19			数据通信		6		0
 c20			面向对象程序设计	3		0			c01 c03
 c21			Java			3		0			c01 c03
-c22			C# .net			5		0			c01 c03
+c22			C#.net			5		0			c01 c03
 c23			PowerBuilder		5		0			c01 c03
 c24			VC++			3		0			c01 c03
 c25			ASP程序设计		5		0			c01 c03
 c26			JSP程序设计		5		0			c01 c03
 c27			VB.net			5		0			c01 c03
 c28			Delphi			5		0			c01 c03
-c29			C++  Builder		5		0			c01 c03
+c29			C++Builder		5		0			c01 c03
 c30			英语			5		1
 c31			英语			5		2
 c32			英语			5		3
